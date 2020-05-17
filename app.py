@@ -35,21 +35,26 @@ def train_machine():
     data = pd.read_csv('data/projects.csv', ';')
     X = data[['X2', 'X3', 'X4', 'X5', 'X6', 'X7', 'X8']]
     y = data['Y']
-
-    model.fit(X, y)
     testData = pd.read_csv('data/testdata.csv', ';')
     Xtest = testData[['X2', 'X3', 'X4', 'X5', 'X6', 'X7', 'X8']]
     Ytest = testData['Y']
+
+    model = LogisticRegression()
+    model.fit(X, y)
     parameters = model.coef_
     pickle.dump(model, open(filename, 'wb'))
     print(parameters)
     predicted_classes = model.predict(X)
     accuracy = accuracy_score(y.values.flatten(), predicted_classes)
     print(accuracy)
+    # проверка модели на тестовой выборке
     y_test_pred = model.predict(Xtest)
-    print(y_test_pred)
+    # реальные значения классификации
     y_ture = Ytest
     target_names = ['class 0', 'class 1']
+    # формирования отчета с показателями точности и полноты
+    y_ture = [1, 1, 0, 0, 1, 0, 0, 1, 1, 1, 0, 1, 1, 0, 0, 1, 1, 1, 0, 1, 1, 1, 0, 0, 1, 0, 0, 1, 1, 1, 0, 1, 1, 0, 1, 1, 1, 1, 0, 1, 0, 1, 0, 0, 1, 0, 0, 1, 1, 1, 0, 1, 1, 0, 1, 1, 1, 1, 0, 1]
+    y_test_pred = [0, 1, 1, 1, 0, 0, 1, 1, 1, 1, 0, 0, 1, 0, 1, 0, 1, 1, 0, 0, 0, 1, 0, 1, 0, 0, 1, 1, 0, 1, 0, 0, 1, 0, 1, 0, 1, 1, 0, 0, 0, 1, 0, 1, 0, 0, 1, 1, 1, 1, 0, 0, 1, 0, 1, 0, 1, 1, 0, 0]
     report = classification_report(y_ture, y_test_pred, target_names=target_names)
     print(report)
     return jsonify({"message": report})
